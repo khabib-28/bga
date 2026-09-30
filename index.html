@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#090d16">
+<title>DATA2 BGA Rework - Modern Professional</title>
+<style>
+:root {
+  --bg-dark: #090d16;
+  --panel-bg: rgba(18, 26, 43, 0.75);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --panel-glow: rgba(0, 162, 255, 0.05);
+  
+  --text-main: #f0f4f8;
+  --text-muted: #7c8ba1;
+  
+  --accent-cyan: #00d2ff;
+  --accent-blue: #3a82f6;
+  --accent-orange: #ff7b00;
+  --accent-amber: #ffb700;
+  --accent-pink: #f43f5e;
+  --accent-purple: #a855f7;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+html, body {
+  height: 100%; background: var(--bg-dark); color: var(--text-main); overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: 
+    radial-gradient(circle at 15% 20%, rgba(0, 210, 255, 0.06), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(168, 85, 247, 0.05), transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03), transparent 60%);
+}
+
+.panel {
+  position: relative;
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#app {
+  position: relative; z-index: 2; height: 100vh; height: 100dvh; width: 100vw;
+  padding: 10px 14px; display: flex; flex-direction: column; gap: 10px;
+}
+
+/* ══════ HEADER ══════ */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 18px; flex-shrink: 0;
+}
+.brand-wrap { display: flex; align-items: center; gap: 12px; }
+.brand-logo {
+  width: 28px; height: 28px; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
+}
+.brand-title { font-size: 14px; font-weight: 800; letter-spacing: 1.2px; color: #fff; }
+.brand-sub { font-size: 8px; color: var(--accent-cyan); letter-spacing: 2px; font-weight: 600; opacity: 0.85; }
+
+.head-right { display: flex; align-items: center; gap: 10px; }
+.ble-pill {
+  display: flex; align-items: center; gap: 8px; font-size: 10px; cursor: pointer;
+  padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03); transition: 0.25s;
+}
+.ble-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-red); transition: 0.3s; }
+.ble-pill.on { border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.08); }
+.ble-pill.on .dot { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+.ble-pill .t1 { font-weight: 700; color: var(--text-main); }
+.ble-pill.on .t1 { color: var(--accent-green); }
+
+#gearBtn {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.03); color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
+}
+#gearBtn:active { transform: scale(0.92); color: #fff; }
+
+/* ══════ MAIN GRID ══════ */
+#main { flex: 1; display: flex; gap: 10px; min-height: 0; }
+#colLeft { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+#colRight { width: 230px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; }
+
+/* ══════ GAUGES ══════ */
+#gauges { display: flex; gap: 10px; flex-shrink: 0; }
+.gcard { flex: 1; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+.gcard .ghead-title { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+
+.gwrap { position: relative; width: 92px; height: 92px; }
+.gwrap svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+.gtrack { fill: none; stroke: rgba(255, 255, 255, 0.05); stroke-width: 8; }
+.gfill {
+  fill: none; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 264; stroke-dashoffset: 264;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gcenter { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.gcenter .val { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; color: #fff; }
+.gcenter .val sup { font-size: 10px; font-weight: 600; color: var(--text-muted); }
+.gcenter .tgt { font-size: 9px; color: var(--text-muted); margin-top: 3px; font-weight: 600; }
+
+/* ══════ GRAPH ══════ */
+#graphPanel { flex: 1; min-height: 0; padding: 12px 16px; display: flex; flex-direction: column; }
+.ghead { display: flex; align-items: center; justify-content: space-between; }
+.ghead .t { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+.legend { display: flex; gap: 14px; font-size: 9px; color: var(--text-muted); font-weight: 600; }
+.legend span { display: flex; align-items: center; gap: 5px; }
+.legend i { width: 10px; height: 3px; border-radius: 2px; }
+#graphCanvas { flex: 1; width: 100%; margin-top: 8px; min-height: 0; }
+
+/* ══════ STEPPER ══════ */
+#stepperPanel { flex-shrink: 0; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+.steps { flex: 1; display: flex; align-items: center; justify-content: space-between; }
+.step { display: flex; align-items: center; gap: 6px; position: relative; }
+.step .num {
+  width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: var(--text-muted); background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border); transition: 0.3s;
+}
+.step .lbl { font-size: 9px; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; transition: 0.3s; }
+
+.step.done .num { background: rgba(16, 185, 129, 0.15); border-color: var(--accent-green); color: var(--accent-green); }
+.step.done .lbl { color: var(--accent-green); }
+.step.active .num { background: var(--accent-blue); border-color: var(--accent-blue); color: #fff; box-shadow: 0 0 12px rgba(58, 130, 246, 0.5); }
+.step.active .lbl { color: #fff; font-weight: 800; }
+
+.connector { flex: 1; height: 2px; background: rgba(255, 255, 255, 0.08); margin: 0 8px; border-radius: 2px; transition: 0.3s; }
+.connector.done { background: var(--accent-green); }
+
+/* ══════ RIGHT COLUMN ══════ */
+.stat-card { padding: 10px 14px; }
+.stat-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+.stat-row + .stat-row { border-top: 1px solid rgba(255, 255, 255, 0.04); }
+.stat-row .lbl { font-size: 9px; color: var(--text-muted); font-weight: 700; width: 75px; flex-shrink: 0; }
+.stat-row .val { font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums; color: #fff; }
+.stat-row .bar-track { flex: 1; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, 0.05); overflow: hidden; }
+.stat-row .bar-fill { height: 100%; border-radius: 3px; width: 0%; transition: width 0.4s ease; }
+
+.info-list .stat-row { justify-content: space-between; }
+
+#profileCard { padding: 10px 14px; }
+.card-title { font-size: 9px; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+.profile-grid { display: flex; gap: 6px; }
+
+.pbtn {
+  flex: 1; padding: 8px 0; border: 1px solid var(--panel-border); border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02); display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; transition: 0.2s; color: var(--text-muted);
+}
+.pbtn .t { font-size: 9px; font-weight: 700; }
+.pbtn:active { transform: scale(0.96); }
+.pbtn.active { background: rgba(58, 130, 246, 0.15); border-color: var(--accent-blue); color: #fff; box-shadow: 0 0 10px rgba(58, 130, 246, 0.2); }
+
+/* ══════ BUTTONS ══════ */
+#btnStart, #btnStop {
+  width: 100%; border: none; padding: 10px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  cursor: pointer; transition: 0.2s; color: #fff; font-weight: 800; font-size: 12px; letter-spacing: 1px;
+}
+#btnStart { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3); }
+#btnStop { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3); }
+#btnStart:active, #btnStop:active { transform: scale(0.97); }
+#btnStart:disabled, #btnStop:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+
+/* SVG Icons */
+.ico { fill: currentColor; display: inline-block; vertical-align: middle; }
+
+/* Rotate Prompt */
+#rotatePrompt {
+  position: fixed; inset: 0; background: var(--bg-dark); z-index: 999; display: none;
+  align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 20px;
+}
+@media (orientation: portrait) {
+  #rotatePrompt { display: flex; }
+  #app { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="rotatePrompt">
+  <div style="font-size: 40px; margin-bottom: 10px;">📱</div>
+  <h2>Miringkan Smartphone Anda</h2>
+  <p style="color: var(--text-muted); font-size: 12px; margin-top: 5px;">Dashboard dirancang presisi untuk mode Landscape.</p>
+</div>
+
+<div id="app">
+  <header class="panel">
+    <div class="brand-wrap">
+      <div class="brand-logo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2v20M2 12h20"/></svg>
+      </div>
+      <div>
+        <div class="brand-title">SMART BGA REWORK</div>
+        <div class="brand-sub">PRECISION SYSTEM</div>
+      </div>
+    </div>
+    <div class="head-right">
+      <div class="ble-pill" id="blePill">
+        <div class="dot"></div>
+        <span class="t1" id="bleText">Connect</span>
+      </div>
+      <button id="gearBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    </div>
+  </header>
+
+  <div id="main">
+    <div id="colLeft">
+      <div id="gauges">
+        <div class="gcard panel">
+          <div class="ghead-title">IR TOP</div>
+          <div class="gwrap">
+            <svg viewBox="0 0 92 92">
+              <circle class="gtrack" cx="46" cy="46" r="42"></circle>
+              <circle class="gfill" id="gTop" cx="46" cy="46" r="42" stroke="var(--accent-orange)"></circle>
+            </svg>
+            <div class="gcenter">
+              <div class="val"><span id="tc1Val">42</span><sup>°C</sup></div>
+              <div class="tgt" id="tc1Tgt">/ 200°C</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gcard panel">
+          <div class="ghead-title">IR BOTTOM</div>
+          <div class="gwrap">
+            <svg viewBox="0 0 92 92">
+              <circle class="gtrack" cx="46" cy="46" r="42"></circle>
+              <circle class="gfill" id="gBot" cx="46" cy="46" r="42" stroke="var(--accent-purple)"></circle>
+            </svg>
+            <div class="gcenter">
+              <div class="val"><span id="tc2Val">38</span><sup>°C</sup></div>
+              <div class="tgt" id="tc2Tgt">/ 250°C</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gcard panel">
+          <div class="ghead-title">CHIP (MASTER)</div>
+          <div class="gwrap">
+            <svg viewBox="0 0 92 92">
+              <circle class="gtrack" cx="46" cy="46" r="42"></circle>
+              <circle class="gfill" id="gChip" cx="46" cy="46" r="42" stroke="var(--accent-cyan)"></circle>
+            </svg>
+            <div class="gcenter">
+              <div class="val"><span id="tc3Val">36</span><sup>°C</sup></div>
+              <div class="tgt" id="tc3Tgt">/ 120°C</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="graphPanel" class="panel">
+        <div class="ghead">
+          <div class="t">CHIP TEMPERATURE HISTORY</div>
+          <div class="legend">
+            <span><i style="background: var(--accent-orange)"></i>TC3 Master</span>
+            <span><i style="background: var(--accent-cyan)"></i>Target</span>
+          </div>
+        </div>
+        <canvas id="graphCanvas"></canvas>
+      </div>
+
+      <div id="stepperPanel" class="panel">
+        <div class="steps">
+          <div class="step active"><div class="num">1</div><div class="lbl">PREHEAT</div></div>
+          <div class="connector"></div>
+          <div class="step"><div class="num">2</div><div class="lbl">SOAK</div></div>
+          <div class="connector"></div>
+          <div class="step"><div class="num">3</div><div class="lbl">REFLOW</div></div>
+          <div class="connector"></div>
+          <div class="step"><div class="num">4</div><div class="lbl">HOLD</div></div>
+          <div class="connector"></div>
+          <div class="step"><div class="num">5</div><div class="lbl">COOLING</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="colRight">
+      <div class="panel stat-card">
+        <div class="stat-row">
+          <span class="lbl">FAN TOP</span>
+          <div class="bar-track"><div class="bar-fill" style="width: 80%; background: var(--accent-cyan)"></div></div>
+          <span class="val">3200</span>
+        </div>
+        <div class="stat-row">
+          <span class="lbl">FAN BOTTOM</span>
+          <div class="bar-track"><div class="bar-fill" style="width: 78%; background: var(--accent-cyan)"></div></div>
+          <span class="val">3180</span>
+        </div>
+        <div class="stat-row">
+          <span class="lbl">SSR1 (IR TOP)</span>
+          <div class="bar-track"><div class="bar-fill" style="width: 32%; background: var(--accent-orange)"></div></div>
+          <span class="val">32%</span>
+        </div>
+        <div class="stat-row">
+          <span class="lbl">SSR2 (IR BOT)</span>
+          <div class="bar-track"><div class="bar-fill" style="width: 28%; background: var(--accent-blue)"></div></div>
+          <span class="val">28%</span>
+        </div>
+      </div>
+
+      <div class="panel stat-card info-list">
+        <div class="stat-row">
+          <span class="lbl">PROFILE</span>
+          <span class="val" style="color: var(--accent-amber)">MED</span>
+        </div>
+        <div class="stat-row">
+          <span class="lbl">PROCESS TIME</span>
+          <span class="val">00:12</span>
+        </div>
+        <div class="stat-row">
+          <span class="lbl">STATUS</span>
+          <span class="val" style="color: var(--accent-green)">Running</span>
+        </div>
+      </div>
+
+      <div class="panel" id="profileCard">
+        <div class="card-title">SELECT PROFILE</div>
+        <div class="profile-grid">
+          <button class="pbtn"><span class="t">SOFT</span></button>
+          <button class="pbtn active"><span class="t">MED</span></button>
+          <button class="pbtn"><span class="t">HARD</span></button>
+        </div>
+      </div>
+
+      <button id="btnStart">START</button>
+      <button id="btnStop">STOP</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Graph Canvas Logic Simple Render
+const cv = document.getElementById('graphCanvas');
+function drawGraph() {
+  if (!cv) return;
+  const dpr = window.devicePixelRatio || 1;
+  const w = cv.clientWidth, h = cv.clientHeight;
+  cv.width = w * dpr; cv.height = h * dpr;
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1;
+  for(let i=0; i<h; i+=20) {
+    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke();
+  }
+
+  // Draw Sample Line
+  ctx.beginPath();
+  ctx.moveTo(10, h - 20);
+  ctx.quadraticCurveTo(w * 0.4, h - 30, w * 0.5, 20);
+  ctx.quadraticCurveTo(w * 0.7, h - 10, w - 10, h - 20);
+  ctx.strokeStyle = '#ff7b00';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+window.addEventListener('resize', drawGraph);
+setTimeout(drawGraph, 100);
+</script>
+</body>
+</html>
